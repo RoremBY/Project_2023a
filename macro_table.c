@@ -1,68 +1,63 @@
 #include "macro_table.h"
 #include <stdlib.h>
+#include <string.h>
 
-macro create_macro(char* name, char* content)
+macro_list* create_empty_macro()
 {
-    macro m = {name, content};
-    return m;
+    macro_list* temp = malloc(sizeof(struct macro_list)); /* Create empty node */
+    return temp;
 }
 
-void copy_macro(macro source, macro *destination)
+macro_list* create_macro(char* name, char* content)
 {
-    set_name(*destination, get_name(source));
-    set_content(*destination, get_content(source));
+    macro_list* temp = malloc(sizeof(struct macro_list)); /* Create empty node */
+
+    temp->name = name;
+    temp->content = content;
+//    temp.name = malloc(sizeof(char) * (strlen(name) + 1));
+//    temp.content = malloc(sizeof(char) * (strlen(content) + 1));
+//    strcpy(temp.name, name);
+//    strcpy(temp.content, content);
+    return temp;
 }
 
-int add_macro(macro* macro_array, macro m, int index, int current_size)
+
+/*
+ * Returns 1 if empty
+ * 0 if not empty.
+ */
+is_macro_empty(macro_list* node)
 {
-    int new_size = 0, i;
-    macro temp_array[current_size];
-    if(index < current_size)
+    if(node->name && node->content)
+        return 0;
+    return 1;
+}
+
+macro_list* add_macro(macro_list* head, char* name, char* content)
+{
+    macro_list *temp, *p;// declare two nodes temp and p
+    temp = create_macro(name, content);//createNode will return a new node with data = value and next pointing to NULL.
+    if (is_macro_empty(head))
     {
-        macro_array[index] = m;
-        new_size = current_size;
+        head = temp;     //when linked list is empty
     }
     else
     {
-        /* Copy the array to the temp one */
-        for(i=0; i < current_size; i ++)
-        {
-            copy_macro(macro_array[i], &temp_array[i]);
-        }
-
-        /* Extend the array in 10 places */
-        new_size = current_size + 10;
-        macro_array = (macro *)malloc(new_size);
-
-        /* Copy everything back */
-        for(i=0; i < current_size; i ++)
-        {
-            copy_macro(temp_array[i], &macro_array[i]);
-        }
-        /* Add the new macro */
-        macro_array[index] = m;
+        p = head;//assign head to p
+        while (p->next != NULL)
+            p = p->next;//traverse the list until p is the last node.The last node always points to NULL.
+        p->next = temp;//Point the previous last node to the new node created.
     }
-    return new_size;
+    return head;
 }
 
 
-
-
-char* get_name(macro m)
+char* get_name(macro_list* node)
 {
-    return m.name;
+    return node->name;
 }
 
-char* get_content(macro m)
+char* get_content(macro_list* node)
 {
-    return m.content;
-}
-
-void set_name(macro m, char* name)
-{
-    m.name = name;
-}
-void set_content(macro m, char* content)
-{
-    m.content = content;
+    return node->content;
 }

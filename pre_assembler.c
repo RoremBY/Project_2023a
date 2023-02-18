@@ -32,10 +32,8 @@ char* pre_assembler(char* file)
     char *current_macro, *current_content;
     char *temp_macro, *temp_name, *temp_content;
     char *first_word_in_line, current_line[MAX_LINE_LENGTH], temp_line[MAX_LINE_LENGTH];
-    int j, line_to_file, macro_number = 0, is_mcr = OFF;
-    int current_max_macro_number = 10; /* Starts with maximum 10 macros */
-    macro current_struct_macro;
-    macro macros_table[current_max_macro_number];
+    int line_to_file, is_mcr = OFF;
+    macro_list *head, *temp_node;
 
     FILE *input_file, *output_file;
 
@@ -49,6 +47,8 @@ char* pre_assembler(char* file)
 
     /* Initialize the current content string */
     current_content = initialize_string(current_content, 10);
+
+    head = create_empty_macro();
     if (input_file)
     {
         while((fgets(current_line, MAX_LINE_LENGTH + 2, input_file)))
@@ -69,9 +69,7 @@ char* pre_assembler(char* file)
                 if(!strcmp(first_word_in_line, "endmcr\n"))
                 {
                     is_mcr = OFF;
-                    current_struct_macro = create_macro(current_macro, current_content);
-                    current_max_macro_number = add_macro(macros_table, current_struct_macro, macro_number, current_max_macro_number);
-                    macro_number++;
+                    head = add_macro(head, current_macro, current_content);
                     current_content = initialize_string(current_content, 10);
                 }
                 else
@@ -100,16 +98,25 @@ char* pre_assembler(char* file)
                 line_to_file = 0;
             }
 
-            for(j=0; j < macro_number; j++)
+            temp_node = head;
+            while(!is_macro_empty(temp_node)) /* Enter only if table isn't empty */
             {
-                temp_name = get_name(macros_table[j]);
+                temp_name = get_name(temp_node);
                 if(!strcmp(temp_name, first_word_in_line))
                 {
-                    temp_content = get_content(macros_table[j]);
+                    temp_content = get_content(temp_node);
                     fputs(temp_content, output_file);
                     line_to_file = 0; /* Make sure doesn't print the name of the macro too */
-                }
 
+                }
+                if(temp_node->next != NULL)
+                {
+                    temp_node = temp_node->next;
+                }
+                else
+                {
+                    temp_node = create_empty_macro();
+                }
             }
 
             /* Check if needed to write the current line to file or not! */
