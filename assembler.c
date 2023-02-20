@@ -9,25 +9,21 @@ int main(int argc, char *argv[])
     char* error;
 
     /* Errors checking */
-    if(argc >= 2)
+    /* if(argc >= 2) - Doesn't need to check this, if no files were given, nothing happen. */
+
+    for(i=1;i<argc;i++)
     {
-
-        for(i=1;i<argc;i++)
+        /*
+        * The user gives the file without extension, you add "as"
+        */
+        error = pre_assembler(argv[i]);
+        if(error)
         {
-            /*
-             * The user gives the file without extension, you add "as"
-             */
-            printf("%s\n", argv[i]);
-            error = pre_assembler(argv[i]);
-            if(error)
-            {
-                printf("%s\n", error);
-            }
-
+            printf("%s", "[ERROR] in file: ");
+            printf("%s", argv[i]);
+            printf("\n%s\n", error);
         }
 
     }
-
-
     return 0;
 }

@@ -2,5 +2,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-char* add_extension(char* file, char* extension);
-char* initialize_string(char* buffer, int min_length);
+/*
+ * Function that concatenate 2 strings and return the full string.
+ * Parameters:
+ * s1 - the first string in the full one.
+ * s2 - the second string in the full one.
+ * Returns:
+ * The function returns a pointer to a string that is s1->s2.
+ */
+char* concatenate_strings(char* s1, char* s2);

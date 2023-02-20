@@ -4,24 +4,6 @@
 #include "other_functions.h"
 #include "pre_assembler.h"
 #include "macro_table.h"
-#define MAX_LINE_LENGTH 82 /* Plus 2 for \n\0 in book and forum said max 80 for line */
-#define ON 1
-#define OFF 0
-
-
-char* concatenate_content(char* current_content, char* current_line)
-{
-    char *temp1, *temp2;
-    int max_size;
-
-    max_size = strlen(current_content) + strlen(current_line);
-    temp1 = malloc(sizeof (char) * max_size);
-    temp2 = malloc(sizeof (char)* strlen(current_line));
-    strcpy(temp1, current_content);
-    strcpy(temp2, current_line);
-    strcat(temp1, temp2);
-    return temp1;
-}
 
 
 
@@ -30,6 +12,7 @@ char* pre_assembler(char* file)
     char *error = NULL;
     char *file_name, *pre_assembler_output_file;
     char *current_macro, *current_content;
+    char **old_content;
     char *temp_macro, *temp_name, *temp_content;
     char *first_word_in_line, current_line[MAX_LINE_LENGTH], temp_line[MAX_LINE_LENGTH];
     int line_to_file, is_mcr = OFF;
@@ -38,17 +21,17 @@ char* pre_assembler(char* file)
     FILE *input_file, *output_file;
 
     /* Add extension to files */
-    file_name = add_extension(file, ".as");
-    pre_assembler_output_file = add_extension(file, ".am");
+    file_name = concatenate_strings(file, ".as");
+    pre_assembler_output_file = concatenate_strings(file, ".am");
 
     /* Open the files with the right modes */
     input_file = fopen(file_name, "r");
     output_file = fopen(pre_assembler_output_file, "w");
 
     /* Initialize the current content string */
-    current_content = initialize_string(current_content, 10);
+    current_content = "";
 
-    head = create_empty_macro();
+    head = NULL;
     if (input_file)
     {
         while((fgets(current_line, MAX_LINE_LENGTH + 2, input_file)))
@@ -70,18 +53,18 @@ char* pre_assembler(char* file)
                 {
                     is_mcr = OFF;
                     head = add_macro(head, current_macro, current_content);
-                    current_content = initialize_string(current_content, 10);
+                    current_content = ""; /* initialize string */
                 }
                 else
                 {
                     /* While is_mcr on and there hasn't been endmcr, store the macro in a string */
                     if(current_content)
                     {
-                        current_content = concatenate_content(current_content, current_line);
+                        /* TODO: Somehow to free the old content! */
+                        current_content = concatenate_strings(current_content, current_line); /* Returns new pointer instead of changing the old one */
                     }
                     else
                     {
-                        current_content = malloc(sizeof(char) * strlen(temp_line));
                         strcpy(current_content, temp_line);
                     }
                 }
@@ -99,7 +82,7 @@ char* pre_assembler(char* file)
             }
 
             temp_node = head;
-            while(!is_macro_empty(temp_node)) /* Enter only if table isn't empty */
+            while(temp_node != NULL) /* Enter only if table isn't empty */
             {
                 temp_name = get_name(temp_node);
                 if(!strcmp(temp_name, first_word_in_line))
@@ -109,14 +92,7 @@ char* pre_assembler(char* file)
                     line_to_file = 0; /* Make sure doesn't print the name of the macro too */
 
                 }
-                if(temp_node->next != NULL)
-                {
-                    temp_node = temp_node->next;
-                }
-                else
-                {
-                    temp_node = create_empty_macro();
-                }
+                temp_node = temp_node->next;
             }
 
             /* Check if needed to write the current line to file or not! */
@@ -130,6 +106,21 @@ char* pre_assembler(char* file)
     }
     fclose(input_file);
     fclose(output_file);
+
+    /* Free memory */
+    free(file_name);
+    free(pre_assembler_output_file);
+    /* TODO: free the memory here better! */
+    temp_node = head;
+    while(temp_node != NULL) /* Enter only if table isn't empty */
+    {
+        temp_name = get_name(temp_node);
+        temp_content = get_content(temp_node);
+        free(temp_name);
+        free(temp_content);
+        temp_node = temp_node->next;
+    }
+
     if (error)
         return error;
     return 0;
