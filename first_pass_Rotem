@@ -1,0 +1,65 @@
+void First_pass(char* File)
+{   
+    int IC =0, DC =0, L;
+    FILE *input_file;
+    char* line=NULL;
+    size_t lineBufferSize = 0;
+    int lineCount = 0;
+    char* firstWord;
+    char* secondWord;
+    int thereIsLable =0;
+    int Error = 0;
+
+    input_file = fopen(file, "r"); 
+    if (input_file)
+    {
+        while(line = getline(&line, &lineBufferSize, input_file)/*LINE 2*/
+        {
+            L=0;
+           int thereIsLable =0;
+           fscanf(line, $s $s,firstWord, secondWord ) 
+           if(isLable(firsWord)) /*LINE 3*/
+                thereIsLable =1; /*LINE 4*/
+            
+           if(isDataStorageDirective(firsWord) || isDataStorageDirective(secondWord) )/*LINE 5*/
+            {
+                if (thereIsLable)
+                {
+                    EnterToDataTable(line, data, DC);
+                    DC++;
+                    thereIsLable=0;
+                /*data type, update DC*/  /*LINE 7*/  
+                }
+            }   
+           else if (isDataStorageDirective(firsWord) || isDataStorageDirective(secondWord))/*LINE 8*/   /**/
+           {
+               if(isExtern())/*line 9*/
+                /*go to each word in the line and add the lable to lable data as external*/
+                thereIsLable=0;
+           }
+           
+           else if (thereIsLable)/*LINE 11*/   
+            {    
+                EnterToDataTable(line,code, IC); 
+                thereIsLable=0;
+                if (OpcodeExist(secondWord))
+                    L++;
+                else
+                {
+                    addError(lineCount, "syntax error");
+                    error++;
+                }
+            }
+            
+            L += opcodeAnalysis(line);
+            IC+=L;
+            lineCount++;
+        }    
+        free(file_name);
+        if (error)
+            return error;
+        return 0;
+        
+    }
+
+}
