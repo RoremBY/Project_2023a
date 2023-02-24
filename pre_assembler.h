@@ -1,9 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#define MAX_LINE_LENGTH 82 /* Plus 2 for \n\0 in book and forum said max 80 for line */
-#define ON 1              /* ON - is mcr on */
-#define OFF 0             /* OFF - is mcr off */
 
 /*
  * Function that process an assembly file and process it using pre assembler.

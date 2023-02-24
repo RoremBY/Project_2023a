@@ -49,3 +49,12 @@ char* get_name(macro_list* node);
  * The function returns a pointer to the content of the macro.
  */
 char* get_content(macro_list* node);
+
+/*
+ * Function that frees all the memory allocated in the macro list.
+ * Parameters:
+ * head - a pointer to the head of the macro_list.
+ * Returns:
+ * The function uses recursion to free all the memory of the list.
+ */
+void free_head(macro_list* head);

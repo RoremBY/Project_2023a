@@ -4,7 +4,9 @@
 #include "other_functions.h"
 #include "pre_assembler.h"
 #include "macro_table.h"
+#include "globals.h"
 
+// TODO: check what happens when 0 macros! free?? problem!
 
 
 char* pre_assembler(char* file)
@@ -12,7 +14,6 @@ char* pre_assembler(char* file)
     char *error = NULL;
     char *file_name, *pre_assembler_output_file;
     char *current_macro, *current_content;
-    char **old_content;
     char *temp_macro, *temp_name, *temp_content;
     char *first_word_in_line, current_line[MAX_LINE_LENGTH], temp_line[MAX_LINE_LENGTH];
     int line_to_file, is_mcr = OFF;
@@ -29,12 +30,12 @@ char* pre_assembler(char* file)
     output_file = fopen(pre_assembler_output_file, "w");
 
     /* Initialize the current content string */
-    current_content = "";
+    current_content = (char *)malloc(1);
 
     head = NULL;
     if (input_file)
     {
-        while((fgets(current_line, MAX_LINE_LENGTH + 2, input_file)))
+        while((fgets(current_line, MAX_LINE_LENGTH, input_file)))
         {
             line_to_file = 1;
 
@@ -53,15 +54,14 @@ char* pre_assembler(char* file)
                 {
                     is_mcr = OFF;
                     head = add_macro(head, current_macro, current_content);
-                    current_content = ""; /* initialize string */
+                    current_content = (char *)malloc(1); /* initialize string */
                 }
                 else
                 {
                     /* While is_mcr on and there hasn't been endmcr, store the macro in a string */
                     if(current_content)
                     {
-                        /* TODO: Somehow to free the old content! */
-                        current_content = concatenate_strings(current_content, current_line); /* Returns new pointer instead of changing the old one */
+                        current_content = concatenate_strings_with_free(current_content, current_line); /* Returns new pointer instead of changing the old one */
                     }
                     else
                     {
@@ -110,16 +110,8 @@ char* pre_assembler(char* file)
     /* Free memory */
     free(file_name);
     free(pre_assembler_output_file);
-    /* TODO: free the memory here better! */
-    temp_node = head;
-    while(temp_node != NULL) /* Enter only if table isn't empty */
-    {
-        temp_name = get_name(temp_node);
-        temp_content = get_content(temp_node);
-        free(temp_name);
-        free(temp_content);
-        temp_node = temp_node->next;
-    }
+    free(current_content);
+    free_head(head);
 
     if (error)
         return error;

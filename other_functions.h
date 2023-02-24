@@ -11,3 +11,9 @@
  * The function returns a pointer to a string that is s1->s2.
  */
 char* concatenate_strings(char* s1, char* s2);
+
+/*
+ * Function works exactly like concatenate_strings, despite one thing -
+ * it frees s1 before it finish.
+ */
+char* concatenate_strings_with_free(char* s1, char* s2);

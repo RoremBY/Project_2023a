@@ -1,6 +1,7 @@
 /* includes and defines */
 #include "pre_assembler.h"
 #include "other_functions.h"
+#include "first_pass.h"
 
 
 int main(int argc, char *argv[])
@@ -22,6 +23,10 @@ int main(int argc, char *argv[])
             printf("%s", "[ERROR] in file: ");
             printf("%s", argv[i]);
             printf("\n%s\n", error);
+        }
+        else
+        {
+            first_pass(argv[i]);
         }
 
     }

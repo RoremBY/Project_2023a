@@ -1,6 +1,6 @@
-
-/* TODO: Initial IC value - 0 or 100? */
-#define IC_INIT_VALUE 100
+#define MAX_LINE_LENGTH 82 /* Plus 2 for \n\0 in book and forum said max 80 for line */
+#define ON 1              /* ON - is mcr/label on */
+#define OFF 0             /* OFF - is mcr/label off */
 
 /* Opcodes */
 typedef enum opcode {
